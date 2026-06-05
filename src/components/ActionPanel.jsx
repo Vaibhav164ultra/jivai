@@ -6,7 +6,7 @@ const CHECKLIST = [
   { id: "3", label: "Stay with the person" },
 ];
 
-export default function ActionPanel() {
+export default function ActionPanel({ isMetronomeActive, onToggleMetronome }) {
   const [checked, setChecked] = useState(new Set());
 
   const toggle = (id) =>
@@ -80,13 +80,18 @@ export default function ActionPanel() {
         </button>
 
         <button
+          onClick={onToggleMetronome}
           style={{
             flex: 1,
             padding: "13px 10px",
             borderRadius: 14,
-            border: "1.5px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.04)",
-            color: "#8aa0b4",
+            border: isMetronomeActive 
+              ? "1.5px solid rgba(239,68,68,0.6)" 
+              : "1.5px solid rgba(255,255,255,0.1)",
+            background: isMetronomeActive 
+              ? "rgba(239,68,68,0.15)" 
+              : "rgba(255,255,255,0.04)",
+            color: isMetronomeActive ? "#ef4444" : "#8aa0b4",
             fontWeight: 600,
             fontSize: 13,
             cursor: "pointer",
@@ -94,19 +99,25 @@ export default function ActionPanel() {
             flexDirection: "column",
             alignItems: "center",
             gap: 4,
+            boxShadow: isMetronomeActive ? "0 0 15px rgba(239,68,68,0.3)" : "none",
+            animation: isMetronomeActive ? "pulse-red 1.09s infinite alternate" : "none", // 1.09s corresponds to 110 BPM (approx 0.54s per beat)
             transition: "all 0.15s",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
-            e.currentTarget.style.color = "#c0d0e0";
+            if (!isMetronomeActive) {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
+              e.currentTarget.style.color = "#c0d0e0";
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-            e.currentTarget.style.color = "#8aa0b4";
+            if (!isMetronomeActive) {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+              e.currentTarget.style.color = "#8aa0b4";
+            }
           }}
         >
-          <span style={{ fontSize: 18 }}>📋</span>
-          <span>Guide</span>
+          <span style={{ fontSize: 18 }}>💓</span>
+          <span>{isMetronomeActive ? "Stop CPR" : "CPR Coach"}</span>
         </button>
       </div>
 
@@ -171,6 +182,13 @@ export default function ActionPanel() {
           </button>
         ))}
       </div>
+
+      <style>{`
+        @keyframes pulse-red {
+          0% { transform: scale(1); box-shadow: 0 0 10px rgba(239,68,68,0.2); }
+          100% { transform: scale(1.03); box-shadow: 0 0 20px rgba(239,68,68,0.5); }
+        }
+      `}</style>
     </div>
   );
 }
